@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import com.rtw.myrpccore.handler.SimpleClientHandler;
+import com.rtw.myrpccore.handler.ClientHandler;
 import com.rtw.myrpccore.util.Response;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.api.CuratorWatcher;
@@ -58,7 +58,7 @@ public class NettyClient {
                 public void initChannel(SocketChannel ch) throws Exception {
                     ch.pipeline().addLast(new DelimiterBasedFrameDecoder(65535, Delimiters.lineDelimiter()[0]));
                     ch.pipeline().addLast(new StringDecoder());
-                    ch.pipeline().addLast(new SimpleClientHandler());
+                    ch.pipeline().addLast(new ClientHandler());
                     ch.pipeline().addLast(new StringEncoder());
                 }
             });

@@ -42,9 +42,14 @@ public class NettyServer {
     // server是否可用标记位
     private AtomicBoolean nettyServerFlag = new AtomicBoolean(false);
 
+    // boss线程池
+    EventLoopGroup bossGroup = new NioEventLoopGroup(); //1
+
+    // 工作线程池
+    EventLoopGroup workerGroup = new NioEventLoopGroup();
+
     public void beginServer() {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(); //1
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+
         try {
             ServerBootstrap b = new ServerBootstrap(); //2
             b.group(bossGroup, workerGroup)
@@ -62,6 +67,7 @@ public class NettyServer {
                             ch.pipeline().addLast(new StringDecoder());
                             // 心跳
                             ch.pipeline().addLast(new IdleStateHandler(100, 100, 100, TimeUnit.SECONDS));
+                            // 业务处理
                             ch.pipeline().addLast(new ServerHandler());
                             // 字符串编码
                             ch.pipeline().addLast(new StringEncoder());
@@ -72,9 +78,9 @@ public class NettyServer {
             CuratorFramework client = ZookeeperFactory.create();
             InetAddress inetAddress = InetAddress.getLocalHost();
             // 去Zookeper注册一个临时的文件夹，文件名为当前server地址,当server与Zk的回话结束时，该节点就会自己消失。
-//            client.create().withMode(CreateMode.EPHEMERAL).forPath(Constants.SERVER_PATH + "/" + inetAddress.getHostAddress() + "#");
+            // EPHEMERAL_SEQUENTIAL表示在创建节点的时候会在末尾增加一个单调递增的数字。主要是为了防止客户端掉线后ZK反映比较慢，然后客户端上线后就会有重复节点的问题
             client.create().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(Constants.SERVER_PATH + "/" + inetAddress.getHostAddress() + "#");
-            log.info("nettyServer 开始监听{}端口", port);
+            log.info("nettyServer 本地IP地址={}，开始监听{}端口", inetAddress.getHostAddress(), port);
             nettyServerFlag.set(true);
             f.channel().closeFuture().sync();
         } catch (Exception e) {
@@ -91,6 +97,14 @@ public class NettyServer {
     // 初始化NettyServer
     public void init(StartUpParam startUpParam) {
         this.port = startUpParam.getPort();
+    }
+
+    // 关闭Netty服务器
+    public void shortDown() {
+        nettyServerFlag.set(false);
+        log.info("开始关闭bossGroup、workerGroup");
+        bossGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
     }
 
     private static NettyServer nettyServer = new NettyServer();

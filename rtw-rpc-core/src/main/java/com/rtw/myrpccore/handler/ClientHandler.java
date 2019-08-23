@@ -12,20 +12,22 @@ import com.rtw.myrpccore.util.Response;
  * @since 2019/2/24
  */
 @Slf4j
-public class SimpleClientHandler extends ChannelInboundHandlerAdapter {
+public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     /**
+     * Object msg 已经经过String转换过了
      * @param ctx
      * @param msg
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        // 1. 先处理心跳信息
         if (msg.toString().equals("ping")) {
             ctx.channel().writeAndFlush("ping\r\n");
             log.info("Client 收到ping, 返回ping");
             return;
         }
-
+        // 2. 将返回对象从JSON解码为Response
         Response response = null;
         try {
             response = JSONObject.parseObject(msg.toString(), Response.class);
@@ -33,7 +35,7 @@ public class SimpleClientHandler extends ChannelInboundHandlerAdapter {
             log.info("Client收到 请求 异常 msg={}", JSONObject.toJSONString(msg));
         }
         log.info("Client收到 请求 response={}", JSONObject.toJSONString(response));
-
+        // 3. 唤醒客户端线程
         DefaultFuture.receive(response);
     }
 
