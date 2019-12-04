@@ -106,7 +106,7 @@ public class NettyClient {
         ChannelFuture channelFuture = ChannelManager.getByRandom();
         channelFuture.channel().writeAndFlush(JSONObject.toJSONString(request));
         channelFuture.channel().writeAndFlush("\r\n");
-        DefaultFuture df = new DefaultFuture(request);
+        DefaultFuture df = new DefaultFuture();
         return df.get(1000000);
     }
 

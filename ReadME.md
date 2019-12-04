@@ -28,25 +28,29 @@ ReadME
 
 2. GIT下载至本地。
 
-3. 运行rtw-rpc-web的MyRpcWebApplication#main()。待输出
+3. 本地安装ZK，并且在ZK创建路径 /dubbo, 即Constants中的数值
+
+4. 启动ZK
+
+5. 运行rtw-rpc-web的MyRpcWebApplication#main()。待输出
 
    > nettyServer 开始监听1024端口
 
    - 表示服务端提供者启动成功
 
-4. 运行rtw-rpc-consumer的MyRpcConsumerApplicationTests##contextLoads。如果看到日志有
+6. 运行rtw-rpc-consumer的MyRpcConsumerApplicationTests##contextLoads。如果看到日志有
 
    > 调用远程提供方成功, 返回为=当前时间
 
    - 表示提供端启动成功
 
-5. 完成以上两步，表示你已经成功掌握rtw_空间宝石的初级力量。
+7. 完成以上两步，表示你已经成功掌握rtw_空间宝石的初级力量。
 
    
 
    
 
-   ##Hello Word!!!!!!
+##Hello Word!!!!!!
 
 
 

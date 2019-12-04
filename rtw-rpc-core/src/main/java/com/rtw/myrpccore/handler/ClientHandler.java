@@ -1,6 +1,7 @@
 package com.rtw.myrpccore.handler;
 
 import com.alibaba.fastjson.JSONObject;
+import com.rtw.myrpccore.client.DefaultFutureManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         }
         log.info("Client收到 请求 response={}", JSONObject.toJSONString(response));
         // 3. 唤醒客户端线程
-        DefaultFuture.receive(response);
+        DefaultFutureManager.receive(response);
+//        DefaultFuture.receive(response);
     }
 
     /**
